@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Hundred Years of Music - DS4200 Final Project</title>
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>One Hundred Years of Music 🎵</h1>
+        <p class="subtitle">Analyzing Music Data from 1923 - 2023</p>
+    </header>
+
+    <main>
+        <section id="introduction">
+            <h2>Introduction</h2>
+            <p>
+                Music is a universal language that evolves alongside society,
+                reflecting cultural shifts, technological advancements, and
+                historical events. Analyzing music data trends over time provides
+                valuable insights into what styles, genres, and themes resonate
+                with listeners. From an artist's perspective, understanding these
+                trends can help shape creative decisions and predict what will be
+                popular in the future. Additionally, contextualizing music trends
+                with historical events offers a unique perspective on how music
+                both influences and is influenced by the world around it. This
+                involves cross-analyzing shifts in musical themes, genres, and
+                popularity with major societal changes. For example, protest songs
+                surged during the Civil Rights Movement and the Vietnam War, with
+                artists like Bob Dylan and Marvin Gaye using music as a form of
+                activism. Similarly, the rise of electronic and dance music in
+                the late 20th century coincided with technological advancements
+                and the growth of club culture. Economic downturns, such as the
+                2008 financial crisis, and global events like the COVID-19 pandemic,
+                may also introduce shifts in music that would be interesting to
+                explore. Overall, this analysis can help us better understand how
+                music serves as both a reaction to and a driver of cultural change.
+            </p>
+        </section>
+
+        <section id="data-description">
+            <h2>About the Data</h2>
+            <p>
+                The data we will be using was sourced from the Kaggle 15,000
+                Music Tracks - 19 Genres (w/ Spotify Data) dataset. The dataset
+                contains 15,150 rows and 18 columns. It is a collection of popular
+                songs spanning from 1923 to 2023. It categorizes each song by a
+                combination of objective and subjective metrics. Some examples
+                of objective features are the track title, artist name, release
+                year, duration, and tempo. Some examples of subjective features
+                are danceability, energy, acousticness, instrumentalness, and
+                valence. It was collected from Spotify by scraping hits by genre
+                and removing all duplicate track title + artist entries. It is
+                important to note that although the dataset contains 15,150 rows,
+                there are only 10,400 unique songs. This is because certain songs
+                appear in duplicate rows to represent cases where multiple artists
+                are credited on the same song. The data is free to use under an
+                MIT license.
+            </p>
+            
+            <div class="dataset-info">
+                <h3>Dataset Overview</h3>
+                <div class="dataset-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">15,150</span>
+                        <span class="stat-label">Rows</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">3,083</span>
+                        <span class="stat-label">Artists</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">1923-2023</span>
+                        <span class="stat-label">Timespan</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">19</span>
+                        <span class="stat-label">Genres</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">18</span>
+                        <span class="stat-label">Columns</span>
+                    </div>
+                </div>
+                
+                <h3>Data Attributes</h3>
+                <div class="data-columns">
+                    <ul>
+                        <li><strong>Track</strong>: Song title</li>
+                        <li><strong>Artist</strong>: Performing artist name</li>
+                        <li><strong>Year</strong>: Release year</li>
+                        <li><strong>Duration</strong>: Song length in milliseconds</li>
+                        <li><strong>Time_Signature</strong>: Time signature of the song</li>
+                        <li><strong>Danceability</strong>: How suitable a song is for dancing (0.0 to 1.0)</li>
+                        <li><strong>Energy</strong>: Measure of intensity and activity (0.0 to 1.0)</li>
+                        <li><strong>Key</strong>: The key of the song (0=C)</li>
+                        <li><strong>Loudness</strong>: Overall loudness in decibels (dB)</li>
+                    </ul>
+                    <ul>
+                        <li><strong>Mode</strong>: Modality of the song (major=1, minor=0)</li>
+                        <li><strong>Speechiness</strong>: Presence of spoken words (0.0 to 1.0)</li>
+                        <li><strong>Acousticness</strong>: How acoustic the song is (0.0 to 1.0)</li>
+                        <li><strong>Instrumentalness</strong>: The likelihood that the song has no vocals (0.0 to 1.0)</li>
+                        <li><strong>Liveness</strong>: Measure of the presence of a live audience (0.0 to 1.0)</li>
+                        <li><strong>Valence</strong>: Musical positiveness of the song (0.0 to 1.0)</li>
+                        <li><strong>Tempo</strong>: Speed of the song in beats per minute (BPM)</li>
+                        <li><strong>Popularity</strong>: Popularity score (0-100)</li>
+                        <li><strong>Genre</strong>: Musical genre of the song</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <p>
+                Data source: <a href="https://www.google.com/url?q=https://www.kaggle.com/datasets/thebumpkin/10400-classic-hits-10-genres-1923-to-2023&sa=D&source=docs&ust=1742053516851300&usg=AOvVaw23fbBa-cwYW79zVlocW6LE" target="_blank">15,000 Music Tracks - Kaggle</a>
+            </p>
+        </section>
+
+        <section id="visualizations">
+            <h2>Visualizations</h2>
+            
+            <div class="visualization-container">
+                <h3>Average Duration Per Decade</h3>
+                <div id="lineplot" class="vis-box"></div>
+                <p class="vis-description">
+                    This line plot shows how the average song duration has changed over the decades.
+                </p>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Mean Danceability Over Time</h3>
+                <div id="vis2" class="vis-box">
+                    <img src="images/mean_danceability.png" alt="Mean Danceability Over Time" class="vis-image">
+                </div>
+                <p class="vis-description">
+                    This line plot shows how the average danceability of songs has changed over the decades.
+                </p>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Median Popularities by Decade for R&B, Pop, Metal, and Country</h3>
+                <div id="vis3" class="vis-box">
+                    <img src="images/genre_medians.png" alt="Genre Medians" class="vis-image">
+                </div>
+                <p class="vis-description">
+                    These line plots compare the median popularity values R&B, Pop, Metal, and Country over the decades.
+                </p>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Genre Attribute Distributions</h3>
+                <div id="vis4" class="vis-box">
+                    <img src="images/genre_distributions.png" alt="Genre Distributions" class="vis-image">
+                </div>
+                <p class="vis-description">
+                    This histogram shows the distribution of songs in the dataset across different genres.
+                </p>
+            </div>
+        </section>
+
+        <section id="summary">
+            <h2>Summary and Conclusions</h2>
+            <h3>Key Findings</h3>
+            <p>
+                <!-- TO DO: Add our key findings here. -->
+            </p>
+            
+            <h3>What We Learned</h3>
+            <p>
+                <!-- TO DO: Add what we learned here. -->
+            </p>
+            
+            <h3>Future Work</h3>
+            <p>
+                <!-- TO DO: Add suggestions for future work here. -->
+            </p>
+        </section>
+
+        <section id="references">
+            <h2>References</h2>
+            <ul>
+                <li><a href="https://royalsocietypublishing.org/doi/10.1098/rsos.150081" target="_blank">Reference 1</a></li>
+                <li><a href="https://arxiv.org/abs/2405.07574#:~:text=Whereas%20most%20songs%20spend%20less,replaced%20more%20frequently%20than%20ever." target="_blank">Reference 2</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>Created by Maya Amit, Caroline Monaco, and Giordano Rogers for DS4200 - Spring 2025</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html> 
