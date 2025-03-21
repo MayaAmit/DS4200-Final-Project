@@ -134,9 +134,7 @@
 
             <div class="visualization-container">
                 <h3>Mean Danceability Over Time</h3>
-                <div id="vis2" class="vis-box">
-                    <img src="images/mean_danceability.png" alt="Mean Danceability Over Time" class="vis-image">
-                </div>
+                <div id="danceability-chart" class="vis-box"></div>
                 <p class="vis-description">
                     This line plot shows how the average danceability of songs has changed over the decades.
                 </p>
@@ -196,5 +194,6 @@
 
     <!-- JavaScript -->
     <script src="js/script.js"></script>
+    <div id="tooltip" style="position: absolute; opacity: 0; background-color: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 8px; pointer-events: none;"></div>
 </body>
 </html> 
