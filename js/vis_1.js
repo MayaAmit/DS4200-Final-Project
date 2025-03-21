@@ -1,4 +1,4 @@
-// script.js
+// vis_1.js
 
 // 1) Set chart dimensions and margins
 const margin = { top: 30, right: 30, bottom: 50, left: 60 },
