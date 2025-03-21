@@ -3,6 +3,10 @@ Building a website displaying music trend analyses
 
 ## Usage
 
+Clone this repository locally
+
+cd into the repo
+
 ```bash
 python -m http.server 8000
 ```
