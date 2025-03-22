@@ -56,7 +56,7 @@ d3.csv("data/ClassicHit.csv").then(data => {
   // If you know Danceability is always between 0 and 1, you can hard-code [0,1].
   // Or dynamically set the upper bound from your data:
   const y = d3.scaleLinear()
-    .domain([0, 1])  
+    .domain([0.25, 0.8])  
     .range([height, 0]);
 
   // 7) Add the x-axis
