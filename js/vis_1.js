@@ -19,11 +19,7 @@ const historicalEvents = {
   1939: "World War II begins",
   1955: "Vietnam War escalates",
   2008: "Global Recession",
-  // Feel free to add more below:
-  // 1929: "Start of the Great Depression",
-  // 1970: "Disco era emerges",
-  // 1981: "Launch of MTV",
-  // 2020: "COVID-19 Pandemic",
+  // Add more if desired...
 };
 
 // 4) Create a tooltip reference (assuming you have a <div id="tooltip"> in your HTML)
@@ -33,17 +29,34 @@ const tooltip = d3.select("#tooltip");
 d3.csv("data/ClassicHit.csv").then(data => {
   // 5a) Parse the CSV data
   data.forEach(d => {
-    d.Year = +d.Year;            // Convert Year to number
+    d.Year = +d.Year;             // Convert Year to number
     d.Danceability = +d.Danceability; // Convert Danceability to float
   });
 
-  // 6) Create scales for x (Year) and y (Danceability)
+  // 5b) Group by year and compute the mean danceability
+  //     Using d3.rollups -> returns an array of [year, meanValue]
+  const yearlyData = d3.rollups(
+    data,
+    v => d3.mean(v, d => d.Danceability), // aggregator for mean
+    d => d.Year                           // key to group by (the year)
+  )
+  // Convert each pair [year, meanDance] into an object {Year, Danceability}
+  .map(([year, meanDance]) => ({
+    Year: year,
+    Danceability: meanDance
+  }))
+  // Sort by Year so the line draws chronologically
+  .sort((a, b) => a.Year - b.Year);
+
+  // 6) Create scales for x (Year) and y (mean Danceability)
   const x = d3.scaleLinear()
-    .domain(d3.extent(data, d => d.Year))  // [minYear, maxYear]
+    .domain(d3.extent(yearlyData, d => d.Year)) // [minYear, maxYear]
     .range([0, width]);
 
+  // If you know Danceability is always between 0 and 1, you can hard-code [0,1].
+  // Or dynamically set the upper bound from your data:
   const y = d3.scaleLinear()
-    .domain([0, 1])  // Danceability typically ranges from 0 to 1
+    .domain([0, 1])  
     .range([height, 0]);
 
   // 7) Add the x-axis
@@ -60,17 +73,17 @@ d3.csv("data/ClassicHit.csv").then(data => {
     .x(d => x(d.Year))
     .y(d => y(d.Danceability));
 
-  // 10) Append the line path
+  // 10) Append the line path using the aggregated data
   svg.append("path")
-    .datum(data)
+    .datum(yearlyData)
     .attr("fill", "none")
     .attr("stroke", "#3498db")
     .attr("stroke-width", 2)
     .attr("d", line);
 
-  // 11) Add circles for each data point
+  // 11) Add circles for each data point (one per year now)
   svg.selectAll("circle")
-    .data(data)
+    .data(yearlyData)
     .enter()
     .append("circle")
       .attr("cx", d => x(d.Year))
