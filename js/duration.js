@@ -1,35 +1,66 @@
+// Initialize the genre drop-down and chart when the page loads
+initGenreDropdown();
 
-createDurationChart();
-
-// Create the avg duration by decade D3 chart
-// NOTE: Just made this to implement D3. Not married to it and could probably
-// easily switch it a line plot for some other part of the data, maybe one of
-// the static line plots we already made. - Gio
-function createDurationChart() {
-    // Load the CSV file with our data
+function initGenreDropdown() {
+    // Load CSV data to extract genres
     d3.csv("data/ClassicHit.csv").then(function(data) {
-        // Grouping by decade and then calculating the average duration
-        const decadeData = {};
+        // Assume each row has a "Genre" property
+        const genres = new Set();
+        data.forEach(d => {
+            if (d.Genre) {
+                genres.add(d.Genre);
+            }
+        });
+        // Convert set to array and sort; add an "All" option at the start
+        const genreArray = Array.from(genres).sort();
+        genreArray.unshift("All");
         
-        // Loop through songs
+        // Populate the drop-down menu
+        const dropdown = d3.select("#genreSelect");
+        dropdown.selectAll("option")
+            .data(genreArray)
+            .enter()
+            .append("option")
+            .attr("value", d => d)
+            .text(d => d);
+        
+        // When the selection changes, update the chart
+        dropdown.on("change", function() {
+            const selectedGenre = this.value;
+            updateChart(selectedGenre);
+        });
+        
+        // Initially display chart with all genres
+        updateChart("All");
+    });
+}
+
+function updateChart(selectedGenre) {
+    // Clear any existing SVG or tooltip in the chart container
+    d3.select("#lineplot").selectAll("svg").remove();
+    d3.select("#lineplot").selectAll("div").remove();
+    
+    // Load CSV data and filter by selected genre if needed
+    d3.csv("data/ClassicHit.csv").then(function(data) {
+        if(selectedGenre !== "All") {
+            data = data.filter(d => d.Genre === selectedGenre);
+        }
+        
+        // Group data by decade and compute average duration in seconds
+        const decadeData = {};
         data.forEach(function(d) {
             const year = +d.Year;
             const decade = Math.floor(year / 10) * 10 + "s";
+            const duration = +d.Duration / 1000;  // Convert from ms to seconds
             
-            // Convert ms to seconds
-            const duration = +d.Duration / 1000;
-            
-            // Create decade group if it doesn't exist yet
             if (!decadeData[decade]) {
                 decadeData[decade] = { total: 0, count: 0 };
             }
-            
-            // Add this song's duration to the decade total
             decadeData[decade].total += duration;
             decadeData[decade].count += 1;
         });
         
-        // Calculate averages and sort by decade
+        // Prepare chart data array from the aggregated results
         const chartData = [];
         for (let decade in decadeData) {
             chartData.push({
@@ -37,29 +68,25 @@ function createDurationChart() {
                 value: decadeData[decade].total / decadeData[decade].count
             });
         }
+        // Sort data chronologically by decade
+        chartData.sort((a, b) => parseInt(a.decade) - parseInt(b.decade));
         
-        // Sort by decade
-        chartData.sort(function(a, b) {
-            return parseInt(a.decade) - parseInt(b.decade);
-        });
-        
-        // Draw chart
-        drawLineChart(chartData);
+        // Draw the line chart with the prepared data
+        drawLineChart(chartData, selectedGenre);
     });
 }
 
-// Draw the line chart
-function drawLineChart(data) {
-    // Get container size
+function drawLineChart(data, selectedGenre) {
+    // Get the container size for responsive dimensions
     const container = document.getElementById('lineplot');
     const containerWidth = container.clientWidth;
     
-    // Set margins and size
+    // Define margins and dimensions
     const margin = { top: 40, right: 30, bottom: 60, left: 60 };
     const width = containerWidth - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
     
-    // Create the SVG element that will contain our chart
+    // Create the SVG element
     const svg = d3.select("#lineplot")
         .append("svg")
         .attr("width", "100%")
@@ -69,29 +96,29 @@ function drawLineChart(data) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
     
-    // Set up the x and y scales
+    // Set up the scales
     const xScale = d3.scaleBand()
         .domain(data.map(d => d.decade))
         .range([0, width])
         .padding(0.1);
     
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.value) * 1.1]) // Add 10% padding at top
+        .domain([0, d3.max(data, d => d.value) * 1.1])
         .range([height, 0]);
     
-    // Add x-axis
+    // Add the x-axis
     svg.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(xScale))
         .selectAll("text")
         .style("text-anchor", "end")
-        .attr("transform", "rotate(-25)"); // Angle the labels so they don't overlap
+        .attr("transform", "rotate(-25)");
     
-    // Add y-axis
+    // Add the y-axis
     svg.append("g")
         .call(d3.axisLeft(yScale));
     
-    // Add the axis labels
+    // Axis labels
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", height + margin.bottom - 10)
@@ -105,22 +132,26 @@ function drawLineChart(data) {
         .style("text-anchor", "middle")
         .text("Average Duration (seconds)");
     
-    // Add title
+    // Chart title, updated to include the selected genre if not "All"
+    let titleText = "Average Song Duration by Decade";
+    if(selectedGenre !== "All") {
+        titleText += ` for ${selectedGenre}`;
+    }
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", -margin.top / 2)
         .style("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
-        .text("Average Song Duration by Decade");
+        .text(titleText);
     
-    // Create the line
+    // Create the line generator
     const line = d3.line()
         .x(d => xScale(d.decade) + xScale.bandwidth() / 2)
         .y(d => yScale(d.value))
         .curve(d3.curveNatural);
     
-    // Add the line to the chart
+    // Append the line path to the SVG
     svg.append("path")
         .datum(data)
         .attr("fill", "none")
@@ -128,7 +159,7 @@ function drawLineChart(data) {
         .attr("stroke-width", 3)
         .attr("d", line);
     
-    // Add dots for each data point
+    // Add circles at each data point
     const dots = svg.selectAll(".dot")
         .data(data)
         .enter()
@@ -139,10 +170,7 @@ function drawLineChart(data) {
         .attr("r", 5)
         .attr("fill", "#3498db");
     
-    // Add tooltip that shows when hovering over points
-    // If we actually stick with this then might be better to convert seconds
-    // to minutes for the hover box. But for simplicity and since this might
-    // get changed, leaving as is for now. - Gio
+    // Create a tooltip for interactivity
     const tooltip = d3.select("#lineplot")
         .append("div")
         .style("position", "absolute")
@@ -153,14 +181,11 @@ function drawLineChart(data) {
         .style("padding", "10px")
         .style("box-shadow", "0 0 10px rgba(0,0,0,0.1)");
     
-    // Make dots interactive
+    // Set up dot interactions
     dots.on("mouseover", function(event, d) {
-        // Make the dot bigger and red when hovering
         d3.select(this)
             .attr("r", 8)
             .attr("fill", "#e74c3c");
-        
-        // Show the tooltip with the data
         tooltip
             .style("visibility", "visible")
             .html(`<strong>${d.decade}</strong><br>Average Duration: ${d.value.toFixed(1)} seconds`)
@@ -168,12 +193,9 @@ function drawLineChart(data) {
             .style("top", (event.pageY - 28) + "px");
     })
     .on("mouseout", function() {
-        // Return dot to normal when not hovering
         d3.select(this)
             .attr("r", 5)
             .attr("fill", "#3498db");
-        
-        // Hide the tooltip when not hovering
         tooltip.style("visibility", "hidden");
     });
-} 
+}

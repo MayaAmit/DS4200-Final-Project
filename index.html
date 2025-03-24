@@ -123,12 +123,31 @@
 
         <section id="visualizations">
             <h2>Visualizations</h2>
+
+            <div class="genre-selector">
+                <label for="genreSelect">Select Genre:</label>
+                <select id="genreSelect"></select>
+            </div>
             
             <div class="visualization-container">
                 <h3>Average Duration Per Decade</h3>
                 <div id="lineplot" class="vis-box"></div>
                 <p class="vis-description">
-                    This line plot shows how the average song duration has changed over the decades.
+                    This line plot illustrates how the average song duration has changed over the decades for each musical genre. 
+                    One of the most striking takeaways is how consistent song lengths have remained overall—regardless of genre, 
+                    most songs fall between 200 and 350 seconds, or roughly 3 to 5 minutes. A notable exception is jazz, 
+                    which peaked at nearly 10 minutes in the 2000s.
+
+                    The “All” line, which averages durations across all genres, reflects this consistency well. 
+                    This trend likely stems from the longstanding influence of radio formatting, which favors tracks around
+                     3 minutes in length. For example, Queen’s Bohemian Rhapsody initially struggled to get airplay due to its 
+                     unusually long runtime.
+                    
+                    Looking within individual genres, we see interesting deviations. EDM, 
+                    for instance, shows a clear linear decline in duration over time, 
+                    while R&B saw a noticeable spike in average song length during the 1960s to 1980s. 
+                    These patterns suggest that while song structure norms persist, each genre evolves 
+                    in its own way in response to cultural and technological shifts.
                 </p>
             </div>
 
@@ -192,16 +211,8 @@
         <p>Created by Maya Amit, Caroline Monaco, and Giordano Rogers for DS4200 - Spring 2025</p>
     </footer>
 
-    <!-- 
-      Script for any shared functionality (optional).
-      If you have general scripts, keep them here.
-    -->
+    
     <script src="js/duration.js"></script>
-
-    <!-- 
-      Script for your first visualization with historical events (vis_1.js).
-      Load AFTER script.js so it can use any shared code from script.js.
-    -->
     <script src="js/danceability.js"></script>
 
     <!-- Tooltip div (positioned absolutely, hidden by default) -->
