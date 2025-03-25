@@ -28,15 +28,15 @@ function initGenreDropdown() {
         // When the selection changes, update the chart
         dropdown.on("change", function() {
             const selectedGenre = this.value;
-            updateChart(selectedGenre);
+            updateDurationChart(selectedGenre);
         });
         
         // Initially display chart with all genres
-        updateChart("All");
+        updateDurationChart("All");
     });
 }
 
-function updateChart(selectedGenre) {
+function updateDurationChart(selectedGenre) {
     // Clear any existing SVG or tooltip in the chart container
     d3.select("#lineplot").selectAll("svg").remove();
     d3.select("#lineplot").selectAll("div").remove();
