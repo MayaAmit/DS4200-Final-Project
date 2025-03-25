@@ -1,3 +1,4 @@
+console.log("duration loaded");
 // Initialize the genre drop-down and chart when the page loads
 initGenreDropdown();
 

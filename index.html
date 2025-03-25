@@ -10,6 +10,10 @@
     
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Plotly.js -->>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
 </head>
 <body>
     <header>
@@ -169,11 +173,14 @@
                 </p>
             </div>
 
+            <div class="year-selector">
+                <label for="yearSelect">Select Year:</label>
+                <select id="yearSelect"></select>
+            </div>
+
             <div class="visualization-container">
                 <h3>Genre Attribute Distributions</h3>
-                <div id="vis4" class="vis-box">
-                    <img src="images/genre_distributions.png" alt="Genre Distributions" class="vis-image">
-                </div>
+                <div id="barchart" class="vis-box"></div>
                 <p class="vis-description">
                     This histogram shows the distribution of songs in the dataset across different genres.
                 </p>
@@ -214,6 +221,7 @@
     
     <script src="js/duration.js"></script>
     <script src="js/danceability.js"></script>
+    <script src="js/genre.js"></script>
 
     <!-- Tooltip div (positioned absolutely, hidden by default) -->
     <div id="tooltip"
