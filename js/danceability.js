@@ -16,16 +16,24 @@ const svg = container.append("svg")
   .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+// Add a white background rectangle to the chart area
+svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "#fff")
+    .lower();
+
 // 4) Define a dictionary of historical events to highlight
 const historicalEvents = {
   1914: "World War I begins",
   1929: "The Great Depression Begins",
   1939: "World War II begins",
+  1945: "Work War II Ends",
   1955: "Vietnam War escalates",
   1970: "Disco Era",
+  2001: "9/11",
   2008: "Global Recession",
   2020: "Covid Pandemic Begins", 
-  // Add more if desired...
 };
 
 // 5) Create a tooltip dynamically
@@ -49,6 +57,9 @@ d3.csv("data/ClassicHit.csv").then(data => {
     d.Danceability = +d.Danceability; // Convert Danceability to float
   });
 
+  // Filter out data before 1923
+  data = data.filter(d => d.Year >= 1923);
+
   // 6b) Group by year and compute the mean danceability
   const yearlyData = d3.rollups(
     data,
@@ -64,7 +75,7 @@ d3.csv("data/ClassicHit.csv").then(data => {
     .range([0, width]);
 
   const y = d3.scaleLinear()
-    .domain([0.25, 0.7])  // Data is always between 0.25 and 0.7
+    .domain([0.44, 0.67])  // Adjusted domain (data is always between 0.3 and 0.67)
     .range([height, 0]);
 
   // 8) Add the x-axis
@@ -119,31 +130,31 @@ d3.csv("data/ClassicHit.csv").then(data => {
       });
 
   // 13) Add a legend for major historical events on the top left with a background box
-const legend = svg.append("g")
-.attr("class", "legend")
-.attr("transform", "translate(10, 5)");
+  const legend = svg.append("g")
+    .attr("class", "legend")
+    .attr("transform", "translate(10, 5)");
 
-// Append a background rectangle to the legend
-legend.append("rect")
-.attr("x", 0)
-.attr("y", -10)
-.attr("width", 160)
-.attr("height", 25)
-.attr("fill", "#f0f0f0");
+  // Append a background rectangle to the legend
+  legend.append("rect")
+    .attr("x", 0)
+    .attr("y", -10)
+    .attr("width", 160)
+    .attr("height", 25)
+    .attr("fill", "#f0f0f0");
 
-// Purple circle for historical events
-legend.append("circle")
-.attr("cx", 10)
-.attr("cy", 0)
-.attr("r", 5)
-.attr("fill", "purple");
+  // Purple circle for historical events
+  legend.append("circle")
+    .attr("cx", 10)
+    .attr("cy", 0)
+    .attr("r", 5)
+    .attr("fill", "purple");
 
-// Text for the legend
-legend.append("text")
-.attr("x", 25)
-.attr("y", 5)
-.text("Major Historical Event")
-.style("font-size", "12px")
-.attr("alignment-baseline", "middle");
+  // Text for the legend
+  legend.append("text")
+    .attr("x", 25)
+    .attr("y", 5)
+    .text("Major Historical Event")
+    .style("font-size", "12px")
+    .attr("alignment-baseline", "middle");
 
-    });
+});
