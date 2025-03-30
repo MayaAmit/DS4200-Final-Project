@@ -11,7 +11,7 @@
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
-    <!-- Plotly.js -->>
+    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 
 </head>
@@ -142,9 +142,9 @@
                     most songs fall between 200 and 350 seconds, or roughly 3 to 5 minutes. A notable exception is jazz, 
                     which peaked at nearly 10 minutes in the 2000s.
 
-                    The “All” line, which averages durations across all genres, reflects this consistency well. 
+                    The "All" line, which averages durations across all genres, reflects this consistency well. 
                     This trend likely stems from the longstanding influence of radio formatting, which favors tracks around
-                     3 minutes in length. For example, Queen’s Bohemian Rhapsody initially struggled to get airplay due to its 
+                     3 minutes in length. For example, Queen's Bohemian Rhapsody initially struggled to get airplay due to its 
                      unusually long runtime.
                     
                     Looking within individual genres, we see interesting deviations. EDM, 
@@ -152,6 +152,33 @@
                     while R&B saw a noticeable spike in average song length during the 1960s to 1980s. 
                     These patterns suggest that while song structure norms persist, each genre evolves 
                     in its own way in response to cultural and technological shifts.
+                </p>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Correlation Heatmap of Qualitative Features</h3>
+                <div class="vis-box">
+                    <img src="images/qualitative_correlations.png" alt="Correlation Heatmap of Qualitative Music Features" class="vis-image">
+                </div>
+                <p class="vis-description">
+                    This heatmap shows the correlations between the subjective features in our dataset. Becuase qualities like "Danceability"
+                    or "Valence" are open to interpretation, we visualize the relationship between these attributes to see how their values trend together.
+                    <ul>
+                        <li>There is a strong negative correlation (-0.71) between Acousticness and Energy. This may suggest that acoustic songs tend to be calmer. Or it may
+                            indicate a bias in the data author to perceive acoustic songs as less energetic compared to other instrumental styles such as electronic or percussive.
+                        </li>
+                        <li>There is a moderate positive correlation (0.48) between Danceability and Valence. This intuitively aligns with tendency of songs which are popular
+                            in party or club atmospheres to evoke positive feelings in the listener, whether through upbeat rhythms, bright melodies, or feel-good lyrics.
+                        </li>
+                        <li>All other features are weakly correlated. This suggests that many qualities of a song vary independently from one another. For example, the presence of
+                            a live audience in a track doesn't tend to hold any predictive power over whether the song contains many lyrics, or is purely instrumental.
+                        </li>
+                        <li>One noteworthy insight from this matrix is that speechiness and instrumentalness don't have a strong negative correlation, as one might intuitively assume.
+                            This may be due to the presence of longer songs, where the instrumentality and lyrics may balance each other out, or because the nature of many lyrical
+                            songs to still incorporate a large proportion of instrumental sections. If spoken word poetry were present in the dataset, to counteract the presence
+                            of purely instrumental tracks, we would likely see a stronger negative trend.
+                        </li>
+                    </ul>
                 </p>
             </div>
 
