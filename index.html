@@ -51,21 +51,27 @@
         <section id="data-description">
             <h2>About the Data</h2>
             <p>
-                The data we will be using was sourced from the Kaggle 15,000
-                Music Tracks - 19 Genres (w/ Spotify Data) dataset. The dataset
-                contains 15,150 rows and 18 columns. It is a collection of popular
+                Our was sourced from the Kaggle 15,000 Music Tracks - 19 Genres 
+                (w/ Spotify Data) dataset. The dataset contains 15,150 rows and
+                18 columns. It is a collection of popular
                 songs spanning from 1923 to 2023. It categorizes each song by a
                 combination of objective and subjective metrics. Some examples
                 of objective features are the track title, artist name, release
                 year, duration, and tempo. Some examples of subjective features
                 are danceability, energy, acousticness, instrumentalness, and
-                valence. It was collected from Spotify by scraping hits by genre
+                valence. It should be noted that because the data author information
+                is unavailable on Kaggle, we recognize that the subjective metrics
+                may be subject to heavy bias. Music, as an artform, is inherently
+                a subjective experience. So all of the subjective features are likely
+                heavily influenced by the bias of the data author.
+                It was collected from Spotify by scraping hits by genre
                 and removing all duplicate track title + artist entries. It is
                 important to note that although the dataset contains 15,150 rows,
-                there are only 10,400 unique songs. This is because certain songs
+                there are only 13,371 unique songs. This is because certain songs
                 appear in duplicate rows to represent cases where multiple artists
-                are credited on the same song. The data is free to use under an
-                MIT license.
+                are credited on the same song. To account for this we cleaned the
+                data to include only unique tracks. The data is free to use under
+                an MIT license.
             </p>
             
             <div class="dataset-info">
