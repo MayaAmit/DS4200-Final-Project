@@ -50,7 +50,7 @@ const tooltip = d3.select("body")
   .style("z-index", "999");
 
 // 6) Load the CSV data
-d3.csv("data/ClassicHit.csv").then(data => {
+d3.csv("data/ClassicHit_clean.csv").then(data => {
   // 6a) Parse the CSV data
   data.forEach(d => {
     d.Year = +d.Year;               // Convert Year to number

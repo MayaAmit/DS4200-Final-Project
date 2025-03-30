@@ -3,7 +3,7 @@ initYearDropdown();
 
 function initYearDropdown() {
     // Load CSV data to extract years
-    d3.csv("data/ClassicHit.csv").then(function(data) {
+    d3.csv("data/ClassicHit_clean.csv").then(function(data) {
         // Assume each row has a "Year" property
         const years = new Set();
         data.forEach(d => {
@@ -38,7 +38,7 @@ function initYearDropdown() {
 // Function to update the chart based on selected year
 function updateGenreChart(selectedYear) {
     // Load CSV data
-    d3.csv("data/ClassicHit.csv").then(function(data) {
+    d3.csv("data/ClassicHit_clean.csv").then(function(data) {
         // Filter the data to get only the songs from the selected year
         const yearData = data.filter(d => d.Year === selectedYear);
 

@@ -4,7 +4,7 @@ initGenreDropdown();
 
 function initGenreDropdown() {
     // Load CSV data to extract genres
-    d3.csv("data/ClassicHit.csv").then(function(data) {
+    d3.csv("data/ClassicHit_clean.csv").then(function(data) {
         // Assume each row has a "Genre" property
         const genres = new Set();
         data.forEach(d => {
@@ -42,7 +42,7 @@ function updateDurationChart(selectedGenre) {
     d3.select("#lineplot").selectAll("div").remove();
     
     // Load CSV data and filter by selected genre if needed
-    d3.csv("data/ClassicHit.csv").then(function(data) {
+    d3.csv("data/ClassicHit_clean.csv").then(function(data) {
         if(selectedGenre !== "All") {
             data = data.filter(d => d.Genre === selectedGenre);
         }
