@@ -58,7 +58,7 @@ d3.csv("data/ClassicHit_clean.csv").then(data => {
   });
 
   // Filter out data before 1923
-  data = data.filter(d => d.Year >= 1923);
+  data = data.filter(d => d.Year >= 1923 && d.Year !== 2024);
 
   // 6b) Group by year and compute the mean danceability
   const yearlyData = d3.rollups(
@@ -75,7 +75,7 @@ d3.csv("data/ClassicHit_clean.csv").then(data => {
     .range([0, width]);
 
   const y = d3.scaleLinear()
-    .domain([0.44, 0.67])  // Adjusted domain (data is always between 0.3 and 0.67)
+    .domain([0.47, 0.67]) 
     .range([height, 0]);
 
   // 8) Add the x-axis
