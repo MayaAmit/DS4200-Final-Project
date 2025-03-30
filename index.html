@@ -127,14 +127,13 @@
 
         <section id="visualizations">
             <h2>Visualizations</h2>
-
-            <div class="genre-selector">
-                <label for="genreSelect">Select Genre:</label>
-                <select id="genreSelect"></select>
-            </div>
             
-            <div class="visualization-container">
+            <div class="visualization-container" style = "position: relative;">
                 <h3>Average Duration Per Decade</h3>
+                <div style="position: absolute; right: 20px; top: 10px;">
+                    <label for="genreSelect">Select Genre: </label>
+                    <select id="genreSelect"></select>
+                  </div>
                 <div id="lineplot" class="vis-box"></div>
                 <p class="vis-description">
                     This line plot illustrates how the average song duration has changed over the decades for each musical genre. 
