@@ -1,4 +1,4 @@
-// vis_1.js
+// danceability.js
 
 // 1) Set chart dimensions and margins
 const margin = { top: 30, right: 30, bottom: 50, left: 60 },
@@ -18,12 +18,25 @@ const historicalEvents = {
   1914: "World War I begins",
   1939: "World War II begins",
   1955: "Vietnam War escalates",
+  1740: "Disco Era",
   2008: "Global Recession",
+  2020: "Covid Pandemic Begins", 
+
   // Add more if desired...
 };
 
-// 4) Create a tooltip reference (assuming you have a <div id="tooltip"> in your HTML)
-const tooltip = d3.select("#tooltip");
+// 4) Create a tooltip dynamically
+const tooltip = d3.select("body")
+  .append("div")
+  .attr("id", "tooltip")
+  .style("position", "absolute")
+  .style("opacity", 0)
+  .style("background-color", "#fff")
+  .style("border", "1px solid #ccc")
+  .style("border-radius", "4px")
+  .style("padding", "8px")
+  .style("pointer-events", "none")
+  .style("z-index", "999");
 
 // 5) Load the CSV data
 d3.csv("data/ClassicHit.csv").then(data => {
@@ -91,7 +104,7 @@ d3.csv("data/ClassicHit.csv").then(data => {
     .append("circle")
       .attr("cx", d => x(d.Year))
       .attr("cy", d => y(d.Danceability))
-      .attr("r", 4)
+      .attr("r", 3)
       .attr("fill", "#2980b9")
       .on("mouseover", (event, d) => {
         // Check if there's a special historical event for this year
@@ -106,9 +119,13 @@ d3.csv("data/ClassicHit.csv").then(data => {
           .style("top", (event.pageY - 28) + "px");
       })
       .on("mousemove", event => {
+        if (historicalEvents[d.Year]) {
         tooltip
           .style("left", (event.pageX + 10) + "px")
           .style("top", (event.pageY - 28) + "px");
+        } else {
+          tooltip.style("opacity", 0);
+        }
       })
       .on("mouseout", () => {
         tooltip
