@@ -118,23 +118,32 @@ d3.csv("data/ClassicHit.csv").then(data => {
         tooltip.style("opacity", 0);
       });
 
-  // 13) Add a legend for major historical events
-  const legend = svg.append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${width - 150}, 10)`);
+  // 13) Add a legend for major historical events on the top left with a background box
+const legend = svg.append("g")
+.attr("class", "legend")
+.attr("transform", "translate(10, 5)");
 
-  // Purple circle for historical events
-  legend.append("circle")
-    .attr("cx", 0)
-    .attr("cy", 0)
-    .attr("r", 5)
-    .attr("fill", "purple");
+// Append a background rectangle to the legend
+legend.append("rect")
+.attr("x", 0)
+.attr("y", -10)
+.attr("width", 160)
+.attr("height", 25)
+.attr("fill", "#f0f0f0");
 
-  // Text for the legend
-  legend.append("text")
-    .attr("x", 10)
-    .attr("y", 4)
-    .text("Major Historical Event")
-    .style("font-size", "12px")
-    .attr("alignment-baseline", "middle");
-});
+// Purple circle for historical events
+legend.append("circle")
+.attr("cx", 10)
+.attr("cy", 0)
+.attr("r", 5)
+.attr("fill", "purple");
+
+// Text for the legend
+legend.append("text")
+.attr("x", 25)
+.attr("y", 5)
+.text("Major Historical Event")
+.style("font-size", "12px")
+.attr("alignment-baseline", "middle");
+
+    });
