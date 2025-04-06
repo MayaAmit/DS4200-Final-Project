@@ -38,8 +38,8 @@ function initGenreDropdown() {
 
 function updateDurationChart(selectedGenre) {
     // Clear any existing SVG or tooltip in the chart container
-    d3.select("#lineplot").selectAll("svg").remove();
-    d3.select("#lineplot").selectAll("div").remove();
+    d3.select("#duration-lineplot").selectAll("svg").remove();
+    d3.select("#duration-lineplot").selectAll("div").remove();
     
     // Load CSV data and filter by selected genre if needed
     d3.csv("data/ClassicHit_clean.csv").then(function(data) {
@@ -79,7 +79,7 @@ function updateDurationChart(selectedGenre) {
 
 function drawLineChart(data, selectedGenre) {
     // Get the container size for responsive dimensions
-    const container = document.getElementById('lineplot');
+    const container = document.getElementById('duration-lineplot');
     const containerWidth = container.clientWidth;
     
     // Define margins and dimensions
@@ -88,7 +88,7 @@ function drawLineChart(data, selectedGenre) {
     const height = 400 - margin.top - margin.bottom;
     
     // Create the SVG element
-    const svg = d3.select("#lineplot")
+    const svg = d3.select("#duration-lineplot")
         .append("svg")
         .attr("width", "100%")
         .attr("height", height + margin.top + margin.bottom)
@@ -172,7 +172,7 @@ function drawLineChart(data, selectedGenre) {
         .attr("fill", "#3498db");
     
     // Create a tooltip for interactivity
-    const tooltip = d3.select("#lineplot")
+    const tooltip = d3.select("#duration-lineplot")
         .append("div")
         .style("position", "absolute")
         .style("visibility", "hidden")
