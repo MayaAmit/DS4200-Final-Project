@@ -175,22 +175,29 @@
                     <img id="toggle-image" src="images/qualitative_correlations.png" class="vis-image">
                 </div>
                 <p class="vis-description">
-                    This heatmap shows the correlations between the subjective features in our dataset. Because qualities like "Danceability"
-                    or "Valence" are open to interpretation, we visualize the relationship between these attributes to see how their values trend together.
-                    <ul>
+                    <b>Qualitative Heatmap:</b> Shows the correlations between all of the subjective features.
+                    <ul class="vis-description">
                         <li>There is a strong negative correlation (-0.71) between Acousticness and Energy. This may suggest that acoustic songs tend to be calmer. Or it may
                             indicate a bias in the data author to perceive acoustic songs as less energetic compared to other instrumental styles such as electronic or percussive.
                         </li>
                         <li>There is a moderate positive correlation (0.48) between Danceability and Valence. This intuitively aligns with tendency of songs which are popular
                             in party or club atmospheres to evoke positive feelings in the listener, whether through upbeat rhythms, bright melodies, or feel-good lyrics.
                         </li>
-                        <li>All other features are weakly correlated. This suggests that many qualities of a song vary independently from one another. For example, the presence of
-                            a live audience in a track doesn't tend to hold any predictive power over whether the song contains many lyrics, or is purely instrumental.
+                    </ul>
+                    <div class="vis-description"><b>Distribution Subplots:</b> Shows the distributions of Danceability, Energy, Liveness, and Valence.</div>
+                    <ul class="vis-description">
+                        <li>
+                            Danceability is somewhat normally distributed, whereas Energy and Valence are slightlyright-skewed, and Liveness is strongly left-skewed.
+                            This suggests that there is a mostly constence representation of danceable vs. non-danceable songs. In contrast, songs are more likely to be energetic and positive.
+                            And less likely to include the presence of a live audience.
                         </li>
-                        <li>One noteworthy insight from this matrix is that speechiness and instrumentalness don't have a strong negative correlation, as one might intuitively assume.
-                            This may be due to the presence of longer songs, where the instrumentality and lyrics may balance each other out, or because the nature of many lyrical
-                            songs to still incorporate a large proportion of instrumental sections. If spoken word poetry were present in the dataset, to counteract the presence
-                            of purely instrumental tracks, we would likely see a stronger negative trend.
+                    </ul>
+                    <div class="vis-description"><b>Instrumentalness vs. Speechiness:</b> Shows the relationship between Instrumentalness and Speechiness.</div>
+                    <ul class="vis-description">
+                        <li>
+                            The scatter plot shows a weak negative correlation between Instrumentalness and Speechiness.
+                            Most data points are clustered near zero on both axes and very few songs have significant values in both at the same time.
+                            This supports the intuition that these qualities tend to be somewhat mutually exclusive in music.
                         </li>
                     </ul>
                 </p>
