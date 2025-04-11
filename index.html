@@ -220,13 +220,29 @@
                 </p>
             </div>
 
+            
+            <select id="metric-select">
+                <option value="Danceability">Danceability</option>
+                <option value="Energy">Energy</option>
+                <option value="Valence">Valence</option>
+            </select>
+
             <div class="visualization-container">
-                <h3>Mean Danceability Over Time</h3>
+                <h3>Features and Historical Events Over Time</h3>
                 <p class="vis-description">
-                    Hover over the points to view the danceability score. Hover over purple points to view the respective historical event.
+                    Hover over the points to view the score. Hover over purple points to view the respective historical event. 
+                    Use the drop down menu to pick between Danceability, Energy, and Valence. 
                 </p>
                 <div id="danceability-chart" class="vis-box"></div>
                 <p class="vis-description">
+                    Danceability, Energy, and Valence are three of the most intuitive indicators of a song’s mood, spirit, and overall vibe, making them ideal for analyzing cultural trends over time. 
+                    Danceability reflects how rhythmically compelling a track is, often correlating with how lively or socially engaging the music is. Energy captures the intensity and activity level of a song
+                     — whether it’s calm or chaotic, relaxed or aggressive — which can mirror the emotional tempo of a time period. Valence directly measures the positivity or happiness of a song, making it a strong proxy for cultural optimism or gloom.
+
+                    In contrast, features like Speechiness, Acousticness, Instrumentalness, and Liveness are more technical or structural. While important for music production,
+                    they aren’t as closely tied to how people emotionally connect with songs or how music reflects the collective mood of a generation.
+
+                    
                     The data suggests that danceability often rises during or shortly after significant crises—such as the Great Depression or the 2008 global recession—possibly 
                     because audiences gravitate toward more upbeat, energetic music as a form of comfort and escapism during challenging periods. From the early 1970s through the 1980s, 
                     danceability shows a noticeable surge corresponding to the Disco Era, when dance-oriented music dominated the charts. In contrast, after the onset of the COVID-19 pandemic 
