@@ -1,29 +1,27 @@
-// danceability.js
-
-// 1) Define margins
+// Defining the margins of the pot
 const margin = { top: 40, right: 30, bottom: 60, left: 60 };
 
-// 2) Select the container and get its width (ensure the container has a defined width via CSS)
+// defining the container width 
 const container = d3.select("#danceability-chart");
 const containerWidth = parseInt(container.style("width"));
 const width = containerWidth - margin.left - margin.right;
 const height = 400 - margin.top - margin.bottom;
 
-// 3) Create an SVG container using the container's full width
+// creating an SVG container
 const svg = container.append("svg")
   .attr("width", containerWidth)
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// Add a white background rectangle to the chart area
+// Add a white background rectangle
 svg.append("rect")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("fill", "#fff")
-    .lower();
+  .attr("width", width)
+  .attr("height", height)
+  .attr("fill", "#fff")
+  .lower();
 
-// 4) Define a dictionary of historical events to highlight
+// chosen historical events
 const historicalEvents = {
   1914: "World War I begins",
   1929: "The Great Depression Begins",
@@ -36,7 +34,7 @@ const historicalEvents = {
   2020: "Covid Pandemic Begins", 
 };
 
-// 5) Create a tooltip dynamically
+// tooltip
 const tooltip = d3.select("body")
   .append("div")
   .attr("id", "tooltip")
@@ -49,71 +47,102 @@ const tooltip = d3.select("body")
   .style("pointer-events", "none")
   .style("z-index", "999");
 
-// 6) Load the CSV data
-d3.csv("data/ClassicHit_clean.csv").then(data => {
-  // 6a) Parse the CSV data
-  data.forEach(d => {
-    d.Year = +d.Year;               // Convert Year to number
-    d.Danceability = +d.Danceability; // Convert Danceability to float
+// loading in the data
+d3.csv("data/ClassicHit_clean.csv").then(rawData => {
+  // Convert relevant fields to numbers
+  rawData.forEach(d => {
+    d.Year = +d.Year;
+    d.Danceability = +d.Danceability;
+    d.Energy = +d.Energy;
+    d.Valence = +d.Valence;
   });
 
-  // Filter out data before 1923
-  data = data.filter(d => d.Year >= 1923 && d.Year !== 2024);
+  // Filter years
+  const filteredData = rawData.filter(d => d.Year >= 1923 && d.Year !== 2024);
 
-  // 6b) Group by year and compute the mean danceability
-  const yearlyData = d3.rollups(
-    data,
-    v => d3.mean(v, d => d.Danceability),
-    d => d.Year
-  )
-  .map(([year, meanDance]) => ({ Year: year, Danceability: meanDance }))
-  .sort((a, b) => a.Year - b.Year);
+  // Prepare aggregated data per metric (danceability, energy, and valence)
+  const metrics = ["Danceability", "Energy", "Valence"];
+  const metricData = {};
 
-  // 7) Create scales for x (Year) and y (mean Danceability)
+  metrics.forEach(metric => {
+    const yearlyAverages = d3.rollups(
+      filteredData,
+      v => d3.mean(v, d => d[metric]),
+      d => d.Year
+    ).map(([year, value]) => ({ Year: year, Value: value }))
+     .sort((a, b) => a.Year - b.Year);
+
+    metricData[metric] = yearlyAverages;
+  });
+
+  // Saling the axes for that each chart is dispalyed with the most
+  // possible detail --- the x axis stays dynamic though 
   const x = d3.scaleLinear()
-    .domain(d3.extent(yearlyData, d => d.Year)) // [minYear, maxYear]
+    .domain(d3.extent(filteredData, d => d.Year))
     .range([0, width]);
 
-  const y = d3.scaleLinear()
-    .domain([0.47, 0.67]) 
-    .range([height, 0]);
-
-  // 8) Add the x-axis
   svg.append("g")
+    .attr("class", "x-axis")
     .attr("transform", `translate(0,${height})`)
-    .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // Format ticks as full years
+    .call(d3.axisBottom(x).tickFormat(d3.format("d")));
 
-  // 9) Add the y-axis
-  svg.append("g")
-    .call(d3.axisLeft(y));
+  // y scale will be updated dynamically
+  const y = d3.scaleLinear().range([height, 0]);
+  svg.append("g").attr("class", "y-axis");
 
-  // 10) Create a line generator
-  const line = d3.line()
-    .x(d => x(d.Year))
-    .y(d => y(d.Danceability));
+  // Placeholder for line and circles
+  const path = svg.append("path").attr("class", "line");
+  const circlesGroup = svg.append("g").attr("class", "circles");
 
-  // 11) Append the line path using the aggregated data
-  svg.append("path")
-    .datum(yearlyData)
-    .attr("fill", "none")
-    .attr("stroke", "#3498db")
-    .attr("stroke-width", 2)
-    .attr("d", line);
+  // Function to update chart
+  function updateChart(metric) {
+    const data = metricData[metric];
 
-  // 12) Add circles for each data point, styling based on historical events
-  svg.selectAll("circle")
-    .data(yearlyData)
-    .enter()
-    .append("circle")
+    // Update chart title
+    d3.select("#chart-title").text(`Mean ${metric} Over Time`);
+
+    // Update y-scale
+    const [yMin, yMax] = d3.extent(data, d => d.Value);
+    y.domain([yMin - 0.01, yMax + 0.01]);
+
+    // Update y-axis
+    svg.select(".y-axis")
+      .transition()
+      .duration(500)
+      .call(d3.axisLeft(y));
+
+    // Update line
+    path
+      .datum(data)
+      .transition()
+      .duration(500)
+      .attr("fill", "none")
+      .attr("stroke", "#3498db")
+      .attr("stroke-width", 2)
+      .attr("d", d3.line()
+        .x(d => x(d.Year))
+        .y(d => y(d.Value))
+      );
+
+    // Update circles
+    const circles = circlesGroup.selectAll("circle").data(data);
+
+    circles.enter()
+      .append("circle")
+      .merge(circles)
+      .transition()
+      .duration(500)
       .attr("cx", d => x(d.Year))
-      .attr("cy", d => y(d.Danceability))
-      .attr("r", d => historicalEvents[d.Year] ? 5 : 3)  // Bigger if there's a historical event
-      .attr("fill", d => historicalEvents[d.Year] ? "purple" : "#2980b9")
+      .attr("cy", d => y(d.Value))
+      .attr("r", d => historicalEvents[d.Year] ? 5 : 3)
+      .attr("fill", d => historicalEvents[d.Year] ? "purple" : "#2980b9");
+
+    // Tooltip interaction
+    circlesGroup.selectAll("circle")
       .on("mouseover", (event, d) => {
-        // Build tooltip text depending on historical event
         const eventText = historicalEvents[d.Year]
-          ? `<strong>${d.Year}</strong><br>${historicalEvents[d.Year]}<br>Danceability: ${d.Danceability.toFixed(2)}`
-          : `<strong>${d.Year}</strong><br>Danceability: ${d.Danceability.toFixed(2)}`;
+          ? `<strong>${d.Year}</strong><br>${historicalEvents[d.Year]}<br>${metric}: ${d.Value.toFixed(2)}`
+          : `<strong>${d.Year}</strong><br>${metric}: ${d.Value.toFixed(2)}`;
         tooltip
           .style("opacity", 1)
           .html(eventText)
@@ -125,16 +154,26 @@ d3.csv("data/ClassicHit_clean.csv").then(data => {
           .style("left", (event.pageX + 10) + "px")
           .style("top", (event.pageY - 28) + "px");
       })
-      .on("mouseout", () => {
-        tooltip.style("opacity", 0);
-      });
+      .on("mouseout", () => tooltip.style("opacity", 0));
 
-  // 13) Add a legend for major historical events on the top left with a background box
+    circles.exit().remove();
+  }
+
+  // Initial chart load
+  let currentMetric = "Danceability";
+  updateChart(currentMetric);
+
+  // Dropdown menu change 
+  d3.select("#metric-select").on("change", function () {
+    currentMetric = this.value;
+    updateChart(currentMetric);
+  });
+
+  // legend for historical events (just to indicate that the purple dot signify historical events)
   const legend = svg.append("g")
     .attr("class", "legend")
     .attr("transform", "translate(10, 5)");
 
-  // Append a background rectangle to the legend
   legend.append("rect")
     .attr("x", 0)
     .attr("y", -10)
@@ -142,14 +181,12 @@ d3.csv("data/ClassicHit_clean.csv").then(data => {
     .attr("height", 25)
     .attr("fill", "#f0f0f0");
 
-  // Purple circle for historical events
   legend.append("circle")
     .attr("cx", 10)
     .attr("cy", 0)
     .attr("r", 5)
     .attr("fill", "purple");
 
-  // Text for the legend
   legend.append("text")
     .attr("x", 25)
     .attr("y", 5)
