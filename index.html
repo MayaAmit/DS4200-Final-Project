@@ -194,9 +194,14 @@
               </div>
 
             <div class="visualization-container">
-                <h3>Correlation Heatmap of Qualitative Features</h3>
+                <h3>Analysis of Qualitative Features</h3>
+                <div class="qual-feat-controls" style="margin-bottom: 10px;">
+                    <button id="heatmap-button" class="qual-feat-toggle-button">Qualitative Heatmap</button>
+                    <button id="distributions-button" class="qual-feat-toggle-button">Distribution Subplots</button>
+                    <button id="scatter-button" class="qual-feat-toggle-button">Instrumentalness vs. Speechiness</button>
+                </div>
                 <div class="vis-box" style="height: 800px;">
-                    <img src="images/qualitative_correlations.png" alt="Correlation Heatmap of Qualitative Music Features" class="vis-image">
+                    <img id="toggle-image" src="images/qualitative_correlations.png" class="vis-image">
                 </div>
                 <p class="vis-description">
                     This heatmap shows the correlations between the subjective features in our dataset. Because qualities like "Danceability"
@@ -306,6 +311,26 @@
     <script src="js/features.js"></script>
     <script src="js/danceability.js"></script>
     <script src="js/genre.js"></script>
+
+    <script>
+        // Script for toggling between qualitative feature images
+        const toggleImage = document.getElementById('toggle-image');
+        const HeatmapButton = document.getElementById('heatmap-button');
+        const DistributionsButton = document.getElementById('distributions-button');
+        const ScatterButton = document.getElementById('scatter-button');
+
+        HeatmapButton.addEventListener('click', () => {
+            toggleImage.src = 'images/qualitative_correlations.png';
+        });
+
+        DistributionsButton.addEventListener('click', () => {
+            toggleImage.src = 'images/ds4200_4distributions.png';
+        });
+
+        ScatterButton.addEventListener('click', () => {
+            toggleImage.src = 'images/ds4200_inst_speech_scatter.png';
+        });
+    </script>
 
     <!-- Tooltip div (positioned absolutely, hidden by default) -->
     <div id="tooltip"
