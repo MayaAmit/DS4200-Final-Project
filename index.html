@@ -133,35 +133,6 @@
 
         <section id="visualizations">
             <h2>Visualizations</h2>
-            
-            <div class="visualization-container" style = "position: relative;">
-                <h3>Average Duration Per Decade</h3>
-                <p class="vis-description">
-                    Hover over a point to view the mean duration for that decade. 
-                </p>
-                <div style="position: absolute; right: 20px; top: 10px;">
-                    <label for="genreSelect">Select Genre: </label>
-                    <select id="genreSelect"></select>
-                  </div>
-                <div id="duration-lineplot" class="vis-box"></div>
-                <p class="vis-description">
-                    This line plot illustrates how the average song duration has changed over the decades for each musical genre. 
-                    One of the most striking takeaways is how consistent song lengths have remained overall—regardless of genre, 
-                    most songs fall between 200 and 350 seconds, or roughly 3 to 5 minutes. A notable exception is jazz, 
-                    which peaked at nearly 10 minutes in the 2000s.
-
-                    The "All" line, which averages durations across all genres, reflects this consistency well. 
-                    This trend likely stems from the longstanding influence of radio formatting, which favors tracks around
-                     3 minutes in length. For example, Queen's Bohemian Rhapsody initially struggled to get airplay due to its 
-                     unusually long runtime.
-                    
-                    Looking within individual genres, we see interesting deviations. EDM, 
-                    for instance, shows a clear linear decline in duration over time, 
-                    while R&B saw a noticeable spike in average song length during the 1960s to 1980s. 
-                    These patterns suggest that while song structure norms persist, each genre evolves 
-                    in its own way in response to cultural and technological shifts.
-                </p>
-            </div>
 
             <div class="visualization-container" style="position: relative;">
                 <h3>Feature Trends Over Time</h3>
@@ -242,7 +213,7 @@
                     In contrast, features like Speechiness, Acousticness, Instrumentalness, and Liveness are more technical or structural. While important for music production,
                     they aren’t as closely tied to how people emotionally connect with songs or how music reflects the collective mood of a generation.
 
-                    
+
                     The data suggests that danceability often rises during or shortly after significant crises—such as the Great Depression or the 2008 global recession—possibly 
                     because audiences gravitate toward more upbeat, energetic music as a form of comfort and escapism during challenging periods. From the early 1970s through the 1980s, 
                     danceability shows a noticeable surge corresponding to the Disco Era, when dance-oriented music dominated the charts. In contrast, after the onset of the COVID-19 pandemic 
@@ -317,13 +288,11 @@
         <p>Created by Maya Amit, Caroline Monaco, and Giordano Rogers for DS4200 - Spring 2025</p>
     </footer>
 
-    
-    <script src="js/duration.js"></script>
     <script src="js/features.js"></script>
     <script src="js/danceability.js"></script>
     <script src="js/genre.js"></script>
 
-    <!-- Tooltip div (positioned absolutely, hidden by default) -->
+  
     <div id="tooltip"
          style="
              position: absolute;

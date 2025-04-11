@@ -1,13 +1,13 @@
-// 1) Define margins
+// Defining the margins of the pot
 const margin = { top: 40, right: 30, bottom: 60, left: 60 };
 
-// 2) Select the container and get its width (ensure the container has a defined width via CSS)
+// defining the container width 
 const container = d3.select("#danceability-chart");
 const containerWidth = parseInt(container.style("width"));
 const width = containerWidth - margin.left - margin.right;
 const height = 400 - margin.top - margin.bottom;
 
-// 3) Create an SVG container
+// creating an SVG container
 const svg = container.append("svg")
   .attr("width", containerWidth)
   .attr("height", height + margin.top + margin.bottom)
@@ -21,7 +21,7 @@ svg.append("rect")
   .attr("fill", "#fff")
   .lower();
 
-// 4) Define historical events
+// chosen historical events
 const historicalEvents = {
   1914: "World War I begins",
   1929: "The Great Depression Begins",
@@ -34,7 +34,7 @@ const historicalEvents = {
   2020: "Covid Pandemic Begins", 
 };
 
-// 5) Create a tooltip
+// tooltip
 const tooltip = d3.select("body")
   .append("div")
   .attr("id", "tooltip")
@@ -47,7 +47,7 @@ const tooltip = d3.select("body")
   .style("pointer-events", "none")
   .style("z-index", "999");
 
-// 6) Load the data
+// loading in the data
 d3.csv("data/ClassicHit_clean.csv").then(rawData => {
   // Convert relevant fields to numbers
   rawData.forEach(d => {
@@ -60,7 +60,7 @@ d3.csv("data/ClassicHit_clean.csv").then(rawData => {
   // Filter years
   const filteredData = rawData.filter(d => d.Year >= 1923 && d.Year !== 2024);
 
-  // Prepare aggregated data per metric
+  // Prepare aggregated data per metric (danceability, energy, and valence)
   const metrics = ["Danceability", "Energy", "Valence"];
   const metricData = {};
 
@@ -75,7 +75,8 @@ d3.csv("data/ClassicHit_clean.csv").then(rawData => {
     metricData[metric] = yearlyAverages;
   });
 
-  // 7) X scale and axis (static)
+  // Saling the axes for that each chart is dispalyed with the most
+  // possible detail --- the x axis stays dynamic though 
   const x = d3.scaleLinear()
     .domain(d3.extent(filteredData, d => d.Year))
     .range([0, width]);
@@ -85,7 +86,7 @@ d3.csv("data/ClassicHit_clean.csv").then(rawData => {
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x).tickFormat(d3.format("d")));
 
-  // Y scale will be updated dynamically
+  // y scale will be updated dynamically
   const y = d3.scaleLinear().range([height, 0]);
   svg.append("g").attr("class", "y-axis");
 
@@ -93,7 +94,7 @@ d3.csv("data/ClassicHit_clean.csv").then(rawData => {
   const path = svg.append("path").attr("class", "line");
   const circlesGroup = svg.append("g").attr("class", "circles");
 
-  // 8) Function to update chart
+  // Function to update chart
   function updateChart(metric) {
     const data = metricData[metric];
 
@@ -162,13 +163,13 @@ d3.csv("data/ClassicHit_clean.csv").then(rawData => {
   let currentMetric = "Danceability";
   updateChart(currentMetric);
 
-  // 9) Dropdown change handler
+  // Dropdown menu change 
   d3.select("#metric-select").on("change", function () {
     currentMetric = this.value;
     updateChart(currentMetric);
   });
 
-  // 10) Add legend for historical events
+  // legend for historical events (just to indicate that the purple dot signify historical events)
   const legend = svg.append("g")
     .attr("class", "legend")
     .attr("transform", "translate(10, 5)");

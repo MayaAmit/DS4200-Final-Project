@@ -1,4 +1,5 @@
-// Wait for the document to be fully loaded
+// Wait for the document to be fully loaded -- was having some trouble with 
+// this earlier so its just a percaution 
 window.addEventListener('DOMContentLoaded', function() {
     // Features we want to visualize
     const features = [
@@ -11,20 +12,14 @@ window.addEventListener('DOMContentLoaded', function() {
       "Valence"
     ];
     
-    // Create the feature checkboxes
+    // checkboxes
     createFeatureCheckboxes();
-    
-    // Draw the initial chart with all features
     drawFeatureChart(features);
-    
-    // Function to create checkboxes for features
     function createFeatureCheckboxes() {
       const checkboxContainer = document.getElementById('featureCheckboxes');
-      
-      // Clear any existing checkboxes
+    
       checkboxContainer.innerHTML = '';
       
-      // Add a container for the checkboxes with styling
       const checkboxWrapper = document.createElement('div');
       checkboxWrapper.style.display = 'flex';
       checkboxWrapper.style.flexWrap = 'wrap';
@@ -32,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function() {
       checkboxWrapper.style.marginBottom = '15px';
       checkboxContainer.appendChild(checkboxWrapper);
       
-      // Create a checkbox for each feature
+      // for each feature
       features.forEach(feature => {
         const label = document.createElement('label');
         label.style.display = 'flex';
@@ -77,7 +72,6 @@ window.addEventListener('DOMContentLoaded', function() {
       const containerElem = document.getElementById('feature-lineplot');
       const containerWidth = containerElem.clientWidth || 1000; // Use container width or default to 1000px
       
-      // Set up the margins - use smaller right margin to maximize chart area
       const margin = {top: 50, right: 100, bottom: 50, left: 60};
       const width = containerWidth - margin.left - margin.right;
       const height = 400 - margin.top - margin.bottom;
@@ -95,7 +89,6 @@ window.addEventListener('DOMContentLoaded', function() {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
       
-      // Add a title
       svg.append("text")
         .attr("x", width / 2)
         .attr("y", -30)
@@ -104,7 +97,7 @@ window.addEventListener('DOMContentLoaded', function() {
         .style("font-weight", "bold")
         .text("Feature Trends Over Time");
       
-      // Add a note if no features are selected
+      // Adding a note incase no features are selected just so that something is displayed
       if (selectedFeatures.length === 0) {
         svg.append("text")
           .attr("x", width / 2)
@@ -178,14 +171,14 @@ window.addEventListener('DOMContentLoaded', function() {
             .domain(features)
             .range(d3.schemeCategory10);
           
-          // Add X axis
+          // Add x axis
           svg.append("g")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(xScale).tickFormat(d3.format("d")))
             .selectAll("text")
             .style("font-size", "10px");
           
-          // Add Y axis
+          // Add y axis
           svg.append("g")
             .call(d3.axisLeft(yScale))
             .selectAll("text")
@@ -207,7 +200,6 @@ window.addEventListener('DOMContentLoaded', function() {
             .style("font-size", "12px")
             .text("Feature Value");
           
-          // Add grid lines for readability
           svg.append("g")
             .attr("class", "grid")
             .attr("transform", `translate(0,${height})`)
