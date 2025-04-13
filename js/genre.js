@@ -1,36 +1,38 @@
-// Initialize the year drop-down and chart when the page loads
-initYearDropdown();
+// Initialize the year slider when the page loads
+initYearSlider();
 
-function initYearDropdown() {
+function initYearSlider() {
     // Load CSV data to extract years
     d3.csv("data/ClassicHit_clean.csv").then(function(data) {
         // Assume each row has a "Year" property
         const years = new Set();
         data.forEach(d => {
             if (d.Year) {
-                years.add(d.Year);
+                years.add(+d.Year);
             }
         });
         
         // Convert set to array and sort
-        const yearArray = Array.from(years).sort();
+        const yearArray = Array.from(years).sort((a, b) => a - b);
         
-        // Populate the year drop-down menu
-        const yearDropdown = d3.select("#yearSelect");
-        yearDropdown.selectAll("option")
-            .data(yearArray)
-            .enter()
-            .append("option")
-            .attr("value", d => d)
-            .text(d => d);
+        const yearSlider = d3.select("#yearSlider");
+        const yearLabel = d3.select("#yearLabel");
+
+        // Create slider range
+        yearSlider
+            .attr("min", d3.min(yearArray))
+            .attr("max", d3.max(yearArray))
+            .attr("value", yearArray[0]);
         
         // When the selection changes, update the chart
-        yearDropdown.on("change", function() {
+        yearSlider.on("input", function() {
             const selectedYear = this.value;
+            yearLabel.text(selectedYear)
             updateGenreChart(selectedYear);
         });
         
-        // Initially display chart with the first year in the dropdown
+        // Initial display
+        yearLabel.text(yearArray[0]);
         updateGenreChart(yearArray[0]);
     });
 }

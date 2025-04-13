@@ -234,11 +234,6 @@
                 </p>
             </div>
 
-            <div class="year-selector">
-                <label for="yearSelect">Select Year:</label>
-                <select id="yearSelect"></select>
-            </div>
-
             <div class="visualization-container">
                 <h3>Genre Attribute Distributions</h3>
                 <p class="vis-description">
@@ -246,6 +241,10 @@
                     When hovering over the graph, a number of options will appear on the top right - hover over each 
                     icon to see its functionality. 
                 </p>
+                <div class="year-selector">
+                    <label for="yearSlider">Select Year: <span id="yearLabel"></span></label>
+                    <input type="range" id="yearSlider" min="1899" max="2024" step="1" />
+                </div>
                 <div id="barchart" class="vis-box"></div>
                 <p class="vis-description">
                     This visualization shows, for a selected year, the number of top songs of each genre. This effectively highlights what genres were trending at specific points in time. 
