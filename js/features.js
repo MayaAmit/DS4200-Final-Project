@@ -1,3 +1,8 @@
+// Final: Got rid of debouncing becuase the code wasnt perfect so it was going 
+// more harm than good. I also got rid of the resizing implementation becuase it too 
+// was too complicated. Finally, I made it such that the legend doesnt also updated with every 
+// change since its a bit of an eyesore and also uncessary! The data is still only loaded once
+// as with my previous iterations, so that the chart doesnt refresh every time. 
 // Wait for the document to be fully loaded
 window.addEventListener('DOMContentLoaded', function() {
   // Features we want to visualize
@@ -19,8 +24,7 @@ window.addEventListener('DOMContentLoaded', function() {
   const width = containerWidth - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
   
-  // Major fix: SVG creation moved outside the update function so its only generated once and 
-  // not destroyed on each update !!!! 
+  // Create SVG once
   const svg = d3.select("#feature-lineplot")
     .append("svg")
     .attr("width", "100%")
@@ -51,7 +55,6 @@ window.addEventListener('DOMContentLoaded', function() {
     .text("Please select at least one feature to display")
     .style("opacity", 0);
     
-  // Major fix: Create reusable groups for chart elements !!! 
   // Add axis groups (created once)
   const xAxisGroup = svg.append("g")
     .attr("class", "x-axis")
@@ -122,9 +125,7 @@ window.addEventListener('DOMContentLoaded', function() {
   createFeatureCheckboxes();
   
   // Load data once and then draw the initial chart
-  loadData().then(() => {
-    drawFeatureChart(features);
-  });
+  loadData();
   
   function createFeatureCheckboxes() {
     const checkboxContainer = document.getElementById('featureCheckboxes');
@@ -152,8 +153,8 @@ window.addEventListener('DOMContentLoaded', function() {
       checkbox.checked = true;
       checkbox.style.marginRight = '5px';
       
-      // Use a debounced event handler to prevent rapid consecutive updates
-      checkbox.addEventListener('change', debounce(updateChart, 50));
+      // Simple event handler is enough if you're not toggling rapidly
+      checkbox.addEventListener('change', updateChart);
       
       const text = document.createTextNode(feature);
       
@@ -161,21 +162,6 @@ window.addEventListener('DOMContentLoaded', function() {
       label.appendChild(text);
       checkboxWrapper.appendChild(label);
     });
-  }
-  
-  // Implementing debouncing becuase toggling between the 
-  // checkboxes quickly was leading to issues!! Mostly likley becuase 
-  // the updated were interfering with eachother. Debouncing midigates this problem 
-  // Debounce function to prevent multiple rapid updates
-  function debounce(func, wait) {
-    let timeout;
-    return function() {
-      const context = this, args = arguments;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        func.apply(context, args);
-      }, wait);
-    };
   }
   
   // Function to update the chart based on selected features
@@ -190,103 +176,132 @@ window.addEventListener('DOMContentLoaded', function() {
       }
     });
     
-    // Update the chart with selected features without reloading data
+    // Update the chart with selected features
     drawFeatureChart(selectedFeatures);
   }
   
-  // major fix: Load data only once (instead of on every update)
   // Function to load the data (only called once)
-  async function loadData() {
-    try {
-      const data = await d3.csv("data/ClassicHit_clean.csv");
-      
-      // Group data by year and calculate averages
-      const yearGroups = {};
-      
-      data.forEach(function(d) {
-        const year = +d.Year;
+  function loadData() {
+    d3.csv("data/ClassicHit_clean.csv")
+      .then(function(data) {
+        // Group data by year and calculate averages
+        const yearGroups = {};
         
-        if (!yearGroups[year]) {
-          yearGroups[year] = { 
-            year: year,
-            count: 0
-          };
+        data.forEach(function(d) {
+          const year = +d.Year;
           
-          // Initialize all features with 0
-          features.forEach(function(feature) {
-            yearGroups[year][feature] = 0;
-          });
-        }
-        
-        // Sum up all feature values
-        features.forEach(function(feature) {
-          const value = +d[feature];
-          if (!isNaN(value)) {
-            yearGroups[year][feature] += value;
+          if (!yearGroups[year]) {
+            yearGroups[year] = { 
+              year: year,
+              count: 0
+            };
+            
+            // Initialize all features with 0
+            features.forEach(function(feature) {
+              yearGroups[year][feature] = 0;
+            });
           }
+          
+          // Sum up all feature values
+          features.forEach(function(feature) {
+            const value = +d[feature];
+            if (!isNaN(value)) {
+              yearGroups[year][feature] += value;
+            }
+          });
+          
+          yearGroups[year].count += 1;
         });
         
-        yearGroups[year].count += 1;
-      });
-      
-      // Calculate averages for each feature per year
-      yearlyData = Object.values(yearGroups).map(function(d) {
-        const result = { year: d.year };
-        
-        features.forEach(function(feature) {
-          result[feature] = d[feature] / d.count;
+        // Calculate averages for each feature per year
+        yearlyData = Object.values(yearGroups).map(function(d) {
+          const result = { year: d.year };
+          
+          features.forEach(function(feature) {
+            result[feature] = d[feature] / d.count;
+          });
+          
+          return result;
         });
         
-        return result;
-      });
-      
-      // Sort by year
-      yearlyData.sort(function(a, b) {
-        return a.year - b.year;
-      });
-      
-      // Update x scale domain based on data
-      xScale.domain(d3.extent(yearlyData, d => d.year));
-      
-      // Update axes
-      xAxisGroup.call(d3.axisBottom(xScale).tickFormat(d3.format("d")))
-        .selectAll("text")
-        .style("font-size", "10px");
-      
-      yAxisGroup.call(d3.axisLeft(yScale))
-        .selectAll("text")
-        .style("font-size", "10px");
+        // Sort by year
+        yearlyData.sort(function(a, b) {
+          return a.year - b.year;
+        });
         
-      // Update grid
-      xGridGroup.call(
-        d3.axisBottom(xScale)
-          .tickSize(-height)
-          .tickFormat("")
-      )
-      .selectAll("line")
-      .style("stroke", "#e0e0e0");
-      
-      yGridGroup.call(
-        d3.axisLeft(yScale)
-          .tickSize(-width)
-          .tickFormat("")
-      )
-      .selectAll("line")
-      .style("stroke", "#e0e0e0");
-      
-    } catch (error) {
-      // Display error message
-      d3.select("#feature-lineplot")
-        .append("div")
-        .style("color", "red")
-        .style("padding", "20px")
-        .style("text-align", "center")
-        .style("font-weight", "bold")
-        .text("Error: Could not load music feature data.");
-    }
+        // Update x scale domain based on data
+        xScale.domain(d3.extent(yearlyData, d => d.year));
+        
+        // Update axes
+        xAxisGroup.call(d3.axisBottom(xScale).tickFormat(d3.format("d")))
+          .selectAll("text")
+          .style("font-size", "10px");
+        
+        yAxisGroup.call(d3.axisLeft(yScale))
+          .selectAll("text")
+          .style("font-size", "10px");
+          
+        // Update grid
+        xGridGroup.call(
+          d3.axisBottom(xScale)
+            .tickSize(-height)
+            .tickFormat("")
+        )
+        .selectAll("line")
+        .style("stroke", "#e0e0e0");
+        
+        yGridGroup.call(
+          d3.axisLeft(yScale)
+            .tickSize(-width)
+            .tickFormat("")
+        )
+        .selectAll("line")
+        .style("stroke", "#e0e0e0");
+        
+        // Create static legend (only created once)
+        createLegend();
+        
+        // Now draw the chart after data is loaded
+        drawFeatureChart(features);
+      })
+      .catch(function(error) {
+        // Display error message
+        console.error("Error loading data:", error);
+        d3.select("#feature-lineplot")
+          .append("div")
+          .style("color", "red")
+          .style("padding", "20px")
+          .style("text-align", "center")
+          .style("font-weight", "bold")
+          .text("Error: Could not load music feature data.");
+      });
   }
   
-  // Main function to draw the feature chart (now just updates, doesn't recreate)
+  // Function to create the legend (only called once)
+  function createLegend() {
+    // Create legend items for all features
+    const legendItems = legendGroup.selectAll(".legend-item")
+      .data(features)
+      .enter()
+      .append("g")
+      .attr("class", "legend-item")
+      .attr("transform", (d, i) => `translate(${width + 10},${i * 20})`);
+    
+    legendItems.append("rect")
+      .attr("width", 15)
+      .attr("height", 15)
+      .style("fill", d => colorScale(d));
+    
+    legendItems.append("text")
+      .attr("x", 20)
+      .attr("y", 7.5)
+      .attr("dy", ".35em")
+      .style("text-anchor", "start")
+      .style("font-size", "10px")
+      .text(d => d);
+  }
+  
+  // Main function to draw the feature chart
   function drawFeatureChart(selectedFeatures) {
     // Show/hide no features message
     if (selectedFeatures.length === 0) {
@@ -300,35 +315,31 @@ window.addEventListener('DOMContentLoaded', function() {
       pointsGroup.style("display", null);
     }
     
-    // Update lines using enter/update/exit pattern
-    const lineSelection = linesGroup.selectAll(".feature-line")
-      .data(selectedFeatures, d => d);
+    // Clear existing lines and create new ones
+    linesGroup.selectAll(".feature-line").remove();
     
-    // Remove lines for unselected features
-    lineSelection.exit()
-      .transition().duration(300)
-      .style("opacity", 0)
-      .remove();
+    // Draw a line for each selected feature
+    selectedFeatures.forEach(function(feature) {
+      // Prepare data for this feature
+      const featureData = yearlyData.map(d => ({
+        year: d.year,
+        value: d[feature]
+      }));
+      
+      // Add the line
+      linesGroup.append("path")
+        .datum(featureData)
+        .attr("class", `feature-line feature-line-${feature}`)
+        .attr("fill", "none")
+        .attr("stroke", colorScale(feature))
+        .attr("stroke-width", 1.5)
+        .attr("d", line);
+    });
     
-    // Add new lines for newly selected features
-    lineSelection.enter()
-      .append("path")
-      .attr("class", d => `feature-line feature-line-${d}`)
-      .attr("fill", "none")
-      .attr("stroke", d => colorScale(d))
-      .attr("stroke-width", 1.5)
-      .style("opacity", 0)
-      .attr("d", function(feature) {
-        const featureData = yearlyData.map(d => ({
-          year: d.year,
-          value: d[feature]
-        }));
-        return line(featureData);
-      })
-      .transition().duration(300)
-      .style("opacity", 1);
+    // Clear existing points
+    pointsGroup.selectAll(".feature-dot").remove();
     
-    // Update points for each feature
+    // Add points for each selected feature
     selectedFeatures.forEach(function(feature) {
       // Prepare data for this feature
       const featureData = yearlyData.map(d => ({
@@ -337,98 +348,16 @@ window.addEventListener('DOMContentLoaded', function() {
         feature: feature
       }));
       
-      // Update points using enter/update/exit pattern
-      const pointSelection = pointsGroup.selectAll(`.dot-${feature}`)
-        .data(featureData, d => `${d.year}-${d.feature}`);
-      
-      // Remove points for unselected features
-      pointSelection.exit()
-        .transition().duration(300)
-        .style("opacity", 0)
-        .remove();
-      
-      // Add new points
-      pointSelection.enter()
+      // Add dots
+      pointsGroup.selectAll(`.dot-${feature}`)
+        .data(featureData)
+        .enter()
         .append("circle")
-        .attr("class", `dot-${feature}`)
+        .attr("class", `feature-dot dot-${feature}`)
         .attr("cx", d => xScale(d.year))
         .attr("cy", d => yScale(d.value))
         .attr("r", 2)
-        .attr("fill", colorScale(feature))
-        .style("opacity", 0)
-        .transition().duration(300)
-        .style("opacity", 1);
+        .attr("fill", colorScale(feature));
     });
-    
-    // Clean up points for features not in selection
-    features.forEach(feature => {
-      if (!selectedFeatures.includes(feature)) {
-        pointsGroup.selectAll(`.dot-${feature}`)
-          .transition().duration(300)
-          .style("opacity", 0)
-          .remove();
-      }
-    });
-    
-    // Update legend using enter/update/exit
-    const legendSelection = legendGroup.selectAll(".legend-item")
-      .data(selectedFeatures, d => d);
-    
-    // Remove legend items for unselected features
-    legendSelection.exit()
-      .transition().duration(300)
-      .style("opacity", 0)
-      .remove();
-    
-    // Create new legend items
-    const enterLegend = legendSelection.enter()
-      .append("g")
-      .attr("class", "legend-item")
-      .style("opacity", 0)
-      .attr("transform", (d, i) => `translate(${width + 10},${i * 20})`);
-    
-    enterLegend.append("rect")
-      .attr("width", 15)
-      .attr("height", 15)
-      .style("fill", d => colorScale(d));
-    
-    enterLegend.append("text")
-      .attr("x", 20)
-      .attr("y", 7.5)
-      .attr("dy", ".35em")
-      .style("text-anchor", "start")
-      .style("font-size", "10px")
-      .text(d => d);
-    
-    enterLegend.transition().duration(300)
-      .style("opacity", 1);
-    
-    // Update positions of all legend items
-    legendGroup.selectAll(".legend-item")
-      .transition().duration(300)
-      .attr("transform", (d, i) => `translate(${width + 10},${i * 20})`);
   }
-  
-  // Add a listener to resize the chart if the window size changes
-  const resizeObserver = new ResizeObserver(debounce(() => {
-    // Update dimensions
-    const newContainerWidth = containerElem.clientWidth || 1000;
-    const newWidth = newContainerWidth - margin.left - margin.right;
-    
-    // Update SVG viewBox
-    d3.select("#feature-lineplot svg")
-      .attr("viewBox", `0 0 ${newContainerWidth} ${height + margin.top + margin.bottom}`);
-    
-    // Update scales
-    xScale.range([0, newWidth]);
-    
-    // Redraw with current selected features
-    const selectedFeatures = Array.from(
-      document.querySelectorAll('#featureCheckboxes input[type="checkbox"]:checked')
-    ).map(cb => cb.value);
-    
-    drawFeatureChart(selectedFeatures);
-  }, 100));
-  
-  resizeObserver.observe(containerElem);
 });
